@@ -1,0 +1,1 @@
+add_library(BinanceBook_src utils/generator.cpp order_map.cpp models/book_ticker.cpp models/price_quantity.cpp order_book.cpp stack_memory_allocator.cpp stack_memory_allocator.h)
