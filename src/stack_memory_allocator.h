@@ -41,7 +41,7 @@ namespace OrderBook {
         static constexpr std::size_t Capacity = GetNextPowerOf2(MaxNumberOfElements);
         alignas(T)  std::array<char, Capacity * sizeof(T)> Arena_;
         boost::simple_segregated_storage<std::size_t> Pool_;
-        char* LastConstructed_ = Arena_.data();
+        char* NextConstructed_ = Arena_.data();
 
     public:
         StackMemoryAllocator() {
@@ -54,6 +54,12 @@ namespace OrderBook {
         StackMemoryAllocator(StackMemoryAllocator&& rhs) = delete;
         StackMemoryAllocator& operator=(StackMemoryAllocator&& rhs) = delete;
 
+        ~StackMemoryAllocator() {
+            for (char* address = Arena_.data(); address != NextConstructed_; address += sizeof(T)) {
+                reinterpret_cast<T*>(address)->~T();
+            }
+        }
+
         value_type* allocate(std::size_t n) {
             return reinterpret_cast<value_type*>(&Arena_);
         }
@@ -64,11 +70,11 @@ namespace OrderBook {
 
         template <typename U, typename... Args>
         void construct(U* p, Args&&... args) {
-            assert(reinterpret_cast<char*>(p) <= LastConstructed_);
+            assert(reinterpret_cast<char*>(p) <= NextConstructed_);
 
-            if (reinterpret_cast<char*>(p) == LastConstructed_) {
+            if (reinterpret_cast<char*>(p) == NextConstructed_) {
                 ::new ((void*)p) U(std::forward<Args>(args)...);
-                LastConstructed_ += sizeof(T);
+                NextConstructed_ += sizeof(T);
             }
         }
 

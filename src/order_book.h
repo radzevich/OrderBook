@@ -1,16 +1,16 @@
 #pragma once
 
-#include <iomanip>
 #include <iterator>
 #include <vector>
 #include <ranges>
 #include <sstream>
 
+#include <boost/format.hpp>
+
 #include "utils/generator.h"
 #include "order_map.h"
 #include "models/book_ticker.h"
 #include "models/price_quantity.h"
-#include <boost/format.hpp>
 
 namespace OrderBook {
 
@@ -70,6 +70,10 @@ namespace OrderBook {
     };
 
     std::ostream& operator<<(std::ostream& out, const BinanceBook<>& book) {
+        if (book.IsEmpty()) {
+            out << "[]";
+        }
+
         auto [bids, asks] = book.Extract();
 
         int index = 1;
@@ -117,24 +121,6 @@ namespace OrderBook {
                        % (*askIt).Quantity;
             }
         }
-
-
-
-//
-//        formatter = {"[%2d] [%9s] %.3f | %.3f [%-9s]\n"};
-//        for (; bidIt != bids.end(); ++bidIt, ++index) {
-//            out << formatter
-//                   % index
-//                   % (*bidIt).Quantity
-//                   % (*bidIt).Price;
-//        }
-//
-//        for (; askIt != asks.end(); ++askIt, ++index) {
-//            out << formatter
-//                   % index
-//                   % (*askIt).Price
-//                   % (*askIt).Quantity;
-//        }
 
         return out;
     }
