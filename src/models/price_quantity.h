@@ -7,8 +7,6 @@ namespace OrderBook::Models {
     {
         TPrice Price{};
         TQuantity Quantity{};
-
-        auto operator <=> (const PriceQuantity&) const = default; // partial ordering
     };
 
 }

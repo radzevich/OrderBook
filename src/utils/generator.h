@@ -9,8 +9,20 @@
 
 namespace OrderBook::Utils {
 
+    /*
+     * Provides a convenient way to implement coroutines that yield values,
+     * allowing them to be used with range-based for-loops and standard algorithms that accept iterators and ranges.
+     * The Generator class is intended to be used as the return type for coroutines that produce a sequence of values.
+     * It acts as the return object and is tightly coupled with the Promise type.
+     * The Promise and Iterator components work together to manage the coroutine state and expose the yielded values
+     * to the client code.
+     * */
     template <typename T>
     class Generator {
+        /*
+         * Implements the coroutine promise type.
+         * Responsible for managing the coroutine state and providing the necessary functions and behavior for the coroutine.
+        */
         struct Promise {
             T value_;
 
@@ -20,11 +32,11 @@ namespace OrderBook::Utils {
             }
 
             auto initial_suspend() {
-                return std::experimental::suspend_always();
+                return std::experimental::suspend_always(); // coroutine is suspended from the very beginning
             }
 
             auto final_suspend() noexcept {
-                return std::experimental::suspend_always();
+                return std::experimental::suspend_always(); // coroutine is suspended in the end of execution
             }
 
             void return_void() {
@@ -47,6 +59,10 @@ namespace OrderBook::Utils {
 
         struct Sentinel {};
 
+        /*
+         * Serves as the interface between the client code and the Promise.
+         * It implements the input iterator concept and provides the necessary functions and operators to iterate over the yielded values.
+        */
         struct Iterator {
             using iterator_category = std::input_iterator_tag;
             using value_type = T;
