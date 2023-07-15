@@ -1,7 +1,9 @@
 #pragma once
 
-#include <boost/container/flat_map.hpp>
 #include <optional>
+
+#include <boost/container/flat_map.hpp>
+
 #include "models/price_quantity.h"
 #include "utils/generator.h"
 #include "stack_memory_allocator.h"

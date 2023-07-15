@@ -95,6 +95,8 @@ namespace OrderBook {
             if (reinterpret_cast<char*>(p) == NextConstructed_) {
                 ::new ((void*)p) U(std::forward<Args>(args)...);
                 NextConstructed_ += sizeof(T);
+            } else {
+                ::new ((void*)p) U(U(std::forward<Args>(args)...));
             }
         }
 
